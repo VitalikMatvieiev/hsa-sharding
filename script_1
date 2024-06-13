@@ -1,0 +1,51 @@
+CREATE TABLE books (
+    id bigint PRIMARY KEY,
+    category_id int NOT NULL,
+    author character varying NOT NULL,
+    title character varying NOT NULL,
+    year int NOT NULL
+);
+
+CREATE EXTENSION postgres_fdw;
+CREATE SERVER books_1_server 
+FOREIGN DATA WRAPPER postgres_fdw 
+OPTIONS (host 'postgres-3', port '5515', dbname 'books_1');
+
+CREATE USER MAPPING FOR postgres
+SERVER books_1_server
+OPTIONS (user 'postgres', password 'postgres');
+
+CREATE FOREIGN TABLE books_1 (
+    id bigint NOT NULL,
+    category_id int NOT NULL,
+    author character varying NOT NULL,
+    title character varying NOT NULL,
+    year int NOT NULL
+)
+
+SERVER books_1_server
+OPTIONS (schema_name 'public', table_name 'books_1');
+
+CREATE RULE books_insert AS ON INSERT TO books
+DO INSTEAD NOTHING;
+CREATE RULE books_update AS ON UPDATE TO books
+DO INSTEAD NOTHING;
+CREATE RULE books_delete AS ON DELETE TO books
+DO INSTEAD NOTHING;
+
+CREATE RULE books_insert_to_1 AS ON INSERT TO books
+WHERE ( category_id = 1 )
+DO INSTEAD INSERT INTO books_1 VALUES (NEW.*);
+
+INSERT INTO books (id, category_id, author, title, year)
+VALUES (1, 2, 'Jane Austen', 'Pride and Prejudice', 1813);
+
+DROP RULE books_insert ON books;
+DROP RULE books_update ON books;
+DROP RULE books_delete ON books;
+DROP RULE books_insert_to_1 ON books;
+
+ 
+
+
+

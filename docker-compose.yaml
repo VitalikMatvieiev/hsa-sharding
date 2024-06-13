@@ -1,0 +1,66 @@
+services:
+  postgres-1:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=car_sharing
+    ports:
+      - 5513:5432
+    volumes:
+      - postgres-1-data:/var/lib/postgresql/data
+    networks:
+      - shard_network
+  
+  postgres-2:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=car_sharing
+    ports:
+      - 5514:5432
+    volumes:
+      - postgres-2-data:/var/lib/postgresql/data
+    networks:
+      - shard_network
+
+  postgres-3:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=car_sharing
+    ports:
+      - 5515:5432
+    volumes:
+      - postgres-3-data:/var/lib/postgresql/data
+    networks:
+      - shard_network
+
+  # postgres-4:
+  #   image: citusdata/citus:12.1
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=admin
+  #     - POSTGRES_DB=car_sharing
+  #   ports:
+  #     - 5515:5432
+  #   volumes:
+  #     - postgres-4-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-1-data:
+    driver: local
+  postgres-2-data:
+    driver: local
+  postgres-3-data:
+    driver: local
+  postgres-4-data:
+    driver: local
+networks:
+  shard_network:
